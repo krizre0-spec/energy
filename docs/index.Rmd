@@ -5,29 +5,33 @@ date: "2026-02-10"
 output: html_document
 ---
 
-## Renewable energy dataset
+# How can we Better Facillitate the shift to Clean Energy?
 
-```{r}
+Out of the 17 UN Sustainable Development Goals, efforts that work towards shifting away from fossil fuels and instead exploring and bettering clean energy work to fulfil at least three:
+
+1.**Affordable & Clean Energy**
+
+2.Sustainable Cities & Communities
+
+3.Climate Action
+
+The first would be the direct result while the remaining 2, and arguably more SDGs, would be an indirect result of enhancing affordable and clean energy.
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
 library(readr)
-energy <- read_csv('../../data/IRENA data.csv', skip=1)
+energy <- read_csv('../../data/IRENA data.csv', skip=1) 
 ```
 
-## Gapminder dataset
 
-```{r}
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
 library(gapminder)
 library(dplyr)
-data(gapminder)
-gapminder %>% head
 ```
 
-## Carbon Emissions
 
-```{r}
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
 library(dplyr)
 library(readr)
-
-
 url <- 'https://nyc3.digitaloceanspaces.com/owid-public/data/co2/owid-co2-data.csv'
 
 carbon <-
@@ -38,40 +42,129 @@ carbon <-
          gdp,
          co2,
          hist_co2 = cumulative_co2)
-
-
 ```
 
-## Levelized cost of energy
 
-```{r}
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
 library(readr)
+library(ggplot2)
 url <- 'https://raw.githubusercontent.com/ericmkeen/sewanee_esus/master/02_energy_sector/levelized-cost-of-energy.csv'
 econ <- read_csv(url)
-econ %>% head
+```
+## Emissions
+
+First, let's take a look at the **big picture**. For simplicity’s sake, we are just looking at a handful of countries to serve as a microcosm of how we might deal with all of the world’s countries and their unique strengths, weaknesses, and opportunities for *improvement*.
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+library(plotly)
+carbon <- carbon %>% filter (country %in% c('India', 'France', 
+'Japan', 'Canada', 'United States')) %>% mutate(Country=country)
+v2<-ggplot (carbon,
+        aes(x=year, y=co2, color=Country))+
+   geom_path() + 
+  labs (title='Annual Carbon Emissions by Country',
+        x='Year', y='Co2', caption = 'United States & India stand out') +theme_light() 
+ggplotly(v2)
 ```
 
-```{r}
+## Economic Cotext
+
+For some important context lets look at the economic state of these countries. This will provide us *insight* into the current state of the country and the opportunities, or lack thereof, that could be pursued.
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+gapminder1<-gapminder %>% 
+  filter(country %in% c('India', 'France', 
+'Japan', 'Canada', 'United States'))
+ggplot(gapminder1,
+       aes(x=country,
+           y=gdpPercap,
+           color=country))+
+  geom_point() + theme(legend.position = "none") +
+  labs (title='A Comparison of Per Capita GDP', x='Countries', y='GDP per Capita', 
+        subtitle = 'Differences will influence our approach')
+```
+
+India and the US, which stuck out as big emitters in [the first figure](#emissions), are on opposite ends of the GDP ranges, this means that different solutions may be implemented depending on what is *achievable* and *reasonable* for that region. 
+
+## Fuel cost comparisons
+
+Since there is an economic disparity between the two countries we are targeting, lets look at the affordability of our clean energy options. 
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
 library(ggplot2)
-ggplot(econ,
+library(plotly)
+econ<-econ%>% 
+  mutate(Source=source)
+test<- ggplot(econ,
        aes(x=year,
            y=cost,
-           color=source))+
+           color=Source))+
   geom_point()+
   geom_hline(yintercept=0.05, lty=3)+
 geom_hline(yintercept=0.18, lty=3)+
   annotate(geom='text',
-  x=1990, y=0.1, label='Range of fossil\n fuel costs')
+  x=1990, y=0.1, label='Range of fossil\n fuel costs') +
+  labs(x='Year', y='Cost',title = 'Comparing the Shifting Costs of Clean Energy\n with Fossil Fuels', caption ='There have been huge improvements\n in affordability in recent years!') 
+ggplotly(test)
 ```
 
-```{r}
-echo = FALSE
+Historically, using clean energy would simply not be practical or sustainable for developing countries with less resources, and using Fossil Fuels would have been the only viable option. However, with these advancements, integrating more clean energy sources would not be as costly. 
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
 library(knitr)
+econ<-econ%>% 
+  mutate(Source=source) 
 econ %>% 
   filter(year==2020) %>% 
-  group_by(source) %>% 
-  summarize(cost=mean(cost, na.rm=TRUE)) %>% 
-  kable
+  group_by(Source) %>% 
+  summarize(Cost=mean(cost, na.rm=TRUE)) %>% 
+  kable 
+```
+Looking at these costs, the most cost-effective clean energy implementations for India would be **Hydroelectric** & **Onshore Wind**.
+
++ India's **Hydroelectric** potential is mostly unfulfilled at this point, with only 29% developed. The Himalayan regions are an untapped source, which could increase their capacity greatly. There are currently several projects underway that aim to take advantage of these opportunities. 
+
++ India's **Onshore wind** market is currently ranked [fourth-largest in the world!]{.underline} Producing roughly 51GW (enough to power ~45 million homes).
+
+## Fuel Production Comparisons
+
+The United States’ GDP is **not** a limiting factor as it is for India; in this case, we should examine which power source(s) will deliver the best ["bang for our buck"]{.underine}. 
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+USenergy<-energy %>% 
+  filter(`Country/area`=='United States of America (the)',Year==2022) %>% 
+  select(Technology, Year, `Electricity statistics`)
+
+  
+USenergy %>% select(-Year) %>% kable
 
 ```
 
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+USenergy<-energy %>% 
+  filter(`Country/area`=='United States of America (the)',Year==2022) %>% 
+  select(Technology, Year, `Electricity statistics`)
+
+ggplot(USenergy,
+       aes(x=Technology, y=`Electricity statistics`)) +geom_point()
+
+```
+
+room for improvement /current progress
+
+## Takeaways
+
+The UN’s Sustainable Development Goals aim to produce [achievable goals]{.underline}. This means we must look carefully at **where** improvements can be made and **how** we can make them *within the constraints of the Country’s capabilities*. Especially when considering developing countries, like India, we must recognize that already-developed countries historically used fossil fuels because they are cheap, available, and dependable sources of energy. If we wish for developing countries not to follow in our footsteps, then we must provide a solution that is on par with, or better than, using fossil fuels.
+
+In contrast, for already developed countries, with more robust infrastructure and economies, we should shift our focus and look at clean energy sources that are suited to the landscape and are the most **efficient**.
+
+
+## Data Sources
+
++ [Carbon Data](https://nyc3.digitaloceanspaces.com/owid-public/data/co2/owid-co2-data.csv)
+
++ [Econ Data](https://raw.githubusercontent.com/ericmkeen/sewanee_esus/master/02_energy_sector/levelized-cost-of-energy.csv)
+
++ [India's Hydroelectric Development](https://economictimes.indiatimes.com/industry/renewables/hydroelectric-surge-india-on-the-cusp-of-a-significant-transformation-in-its-energy-sector/articleshow/109082674.cms?from=md)
+
++ [India's Onshore Wind Develpoment](https://www.tatapower.com/blogs/onshore-and-offshore-wind-energy-partners-in-renewable-energy#:~:text=In%20India%2C%20the%20outlook%20is,of%20the%20first%20offshore%20farms.)
+
++ [GW conversion references](https://www.energysage.com/electricity/house-watts/)
