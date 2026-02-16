@@ -1,13 +1,13 @@
 ---
-title: "energy"
-author: "Liz Kriz"
+title: "How can we Better Facillitate the Shift to Clean Energy?"
+author: "Lizzie Kriz"
 date: "2026-02-10"
 output: html_document
 ---
 
-# How can we Better Facillitate the shift to Clean Energy?
+# Sustainable Development Goals
 
-Out of the 17 UN Sustainable Development Goals, efforts that work towards shifting away from fossil fuels and instead exploring and bettering clean energy work to fulfil at least three:
+Out of the 17 UN Sustainable Development Goals, efforts that work towards shifting away from fossil fuels and instead exploring and bettering clean energy work to fulfill at least three of them:
 
 1.**Affordable & Clean Energy**
 
@@ -67,7 +67,7 @@ v2<-ggplot (carbon,
 ggplotly(v2)
 ```
 
-## Economic Cotext
+## Economic Context
 
 For some important context lets look at the economic state of these countries. This will provide us *insight* into the current state of the country and the opportunities, or lack thereof, that could be pursued.
 
@@ -138,17 +138,11 @@ USenergy %>% select(-Year) %>% kable
 
 ```
 
-```{r, echo=FALSE, warning=FALSE, message=FALSE}
-USenergy<-energy %>% 
-  filter(`Country/area`=='United States of America (the)',Year==2022) %>% 
-  select(Technology, Year, `Electricity statistics`)
++ **Onshore Wind** is a leading renewable energy source in the US with 9,124 GW of potential capacity, and 150 GW currently installed.
 
-ggplot(USenergy,
-       aes(x=Technology, y=`Electricity statistics`)) +geom_point()
++ The US's **Solar Power** has grown 28% annually, making it a huge source of clean energy. In 2024, a new solar project was installed every 54 seconds, totaling 5,561,319 solar energy systems in the U.S.
 
-```
 
-room for improvement /current progress
 
 ## Takeaways
 
@@ -168,3 +162,5 @@ In contrast, for already developed countries, with more robust infrastructure an
 + [India's Onshore Wind Develpoment](https://www.tatapower.com/blogs/onshore-and-offshore-wind-energy-partners-in-renewable-energy#:~:text=In%20India%2C%20the%20outlook%20is,of%20the%20first%20offshore%20farms.)
 
 + [GW conversion references](https://www.energysage.com/electricity/house-watts/)
+
++ [Solar + Onshore wind Power in the US](https://css.umich.edu/publications/factsheets/energy/us-renewable-energy-factsheet)
